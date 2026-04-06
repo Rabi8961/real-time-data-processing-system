@@ -10,49 +10,33 @@ This project simulates a real-time data ingestion system designed to handle larg
 ```mermaid
 flowchart LR
 
-%% Clients / Devices
-A[Device Simulator / IoT Devices] -->|gRPC Streaming| B[Ingestion Service (Node.js gRPC)]
+%% Device
+D[IOT Device] -->|gRPC| G
 
-%% Ingestion Layer
-B -->|Publish Events| C[Message Queue (Pub/Sub / Kafka)]
+%% GKE Box
+subgraph GK["GKE Cluster"]
+    G[gRPC Ingestion Service]
+end
 
-%% Processing Layer
-C --> D1[Worker Service 1]
-C --> D2[Worker Service 2]
-C --> D3[Worker Service N]
+%% Queue
+G --> Q["Message Queue (Pub/Sub)"]
 
-%% Data Storage
-D1 -->|Processed Data| E[BigQuery / PostgreSQL]
-D2 -->|Processed Data| E
-D3 -->|Processed Data| E
+%% Workers
+Q --> W[Worker Service]
 
-%% Cold Storage
-E -->|Archive Old Data| F[Cloud Storage]
+%% Storage
+W --> DB[("Database (BigQuery)")]
 
-%% API Layer
-E --> G[Analytics API Service]
+%% API & UI
+UI[Dashboard] --> API
+API --> UI
+DB --> API[Analytics API]
+API --> DB
 
-%% Dashboard
-G --> H[Dashboard / Client UI]
-
-%% Security & Config
-I[Secret Manager] --> B
-I --> D1
-I --> D2
-I --> D3
-
-J[Service Accounts / IAM] --> B
-J --> D1
-J --> D2
-J --> D3
-
-%% Deployment
-K[GKE Cluster] --> B
-K --> D1
-K --> D2
-K --> D3
-
-L[Cloud Run] --> G
+%% External (Black Box)
+SEC["Security & Config<br/>Secret Manager / IAM"]
+SEC -.-> G
+SEC -.-> W
 ```
 
 ---

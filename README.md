@@ -38,7 +38,7 @@ SEC["Security & Config<br/>Secret Manager / IAM"]
 SEC -.-> G
 SEC -.-> W
 ```
-
+This system uses gRPC for low-latency ingestion and an event-driven pipeline using Pub/Sub for scalable asynchronous processing. Worker services process data independently, enabling horizontal scalability.
 ---
 
 ## ⚙️ Tech Stack
